@@ -141,7 +141,7 @@ function show(i){current=i;root.clear();renderSel();
  const d=DATA[i];empty.style.display='none';info.style.display='block';
  if(!d.ok){info.innerHTML=`<b>${d.name}</b><br><span class="er">불러오기 실패: ${d.err}</span>`;return}
  d.wrap.position.set(0,0,0);root.add(d.wrap);applyOpts();fit();
- info.innerHTML=`<b>${d.name}</b><br>외형(W×D×H): <b>${fmt(d.size)}</b><br>${d.fmt} · 위쪽 축 ${d.up}<br>단위 ${unitSelect(d)} <small style="color:#667085">${d.why}</small><br>메쉬 ${d.meshes}개 · 삼각형 ${d.tris.toLocaleString()}개`;
+ info.innerHTML=`<b>${d.name}</b><br>외형(W×D×H): <b>${fmt(d.size)}</b><br>${d.fmt} · 위쪽 축 ${d.up}<br>파일 단위 ${unitSelect(d)} <small style="color:#667085">${d.why}${d.unit==='ft'?' · Revit 기본 저장 단위':''} → 치수는 mm로 환산 표시</small><br>메쉬 ${d.meshes}개 · 삼각형 ${d.tris.toLocaleString()}개`;
  $('unitSel').onchange=e=>{d.unit=e.target.value;d.why='직접 지정';applyUnit(d);renderList();show(i)}}
 function showAll(){current=-1;root.clear();renderSel();let x=0,ok=0;const gap=0.3;
  DATA.forEach(d=>{if(!d.ok)return;ok++;d.wrap.position.set(0,0,0);d.wrap.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(d.wrap);
