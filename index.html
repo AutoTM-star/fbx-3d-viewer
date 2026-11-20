@@ -4,37 +4,44 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:system-ui,"Malgun Gothic",sans-serif;background:#f4f5f7;color:#1d2330}
 #app{display:flex;height:100%}
-#side{width:300px;flex:none;background:#fff;border-right:1px solid #e1e4ea;display:flex;flex-direction:column}
+#side{width:310px;flex:none;background:#fff;border-right:1px solid #e1e4ea;display:flex;flex-direction:column;min-height:0}
 #side h1{font-size:15px;margin:0;padding:14px 16px;border-bottom:1px solid #e1e4ea}
-#list{flex:1;overflow:auto;padding:6px}
-.it{padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;border:1px solid transparent}
+#drop{display:block;margin:10px;padding:16px 10px;border:2px dashed #b8cdfa;border-radius:10px;text-align:center;cursor:pointer;background:#f7f9ff}
+#drop.over{background:#e9f0ff;border-color:#4a7cf0}#drop input{display:none}
+#drop b{display:block;font-size:14px;color:#2453c6}#drop span{font-size:11px;color:#667085}
+#list{flex:1;overflow:auto;padding:0 6px 6px;min-height:0}
+.it{padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;border:1px solid transparent;user-select:none}
 .it:hover{background:#f2f4f8}.it.on{background:#e9f0ff;border-color:#b8cdfa}
-.it b{display:block;font-size:13px}.it small{display:block;font-size:11px;color:#667085;margin-top:2px}
+.it b{display:block;font-size:13px;word-break:break-all}.it small{display:block;font-size:11px;color:#667085;margin-top:2px}
+.x{float:right;color:#98a2b3;font-size:12px;padding:0 4px}.x:hover{color:#c5221f}
 .st{font-size:11px;margin-top:3px}.ok{color:#137333}.er{color:#c5221f}
-#drop{display:block;margin:10px;padding:16px 10px;border:2px dashed #b8cdfa;border-radius:10px;text-align:center;cursor:pointer;background:#f7f9ff}#drop.over{background:#e9f0ff;border-color:#4a7cf0}#drop input{display:none}#drop b{display:block;font-size:14px;color:#2453c6}#drop span{font-size:11px;color:#667085}.x{float:right;color:#98a2b3;font-size:12px;padding:0 4px}.x:hover{color:#c5221f}#empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:15px;pointer-events:none}
 #opts{padding:10px 14px;border-top:1px solid #e1e4ea;font-size:12px;display:grid;gap:6px}
 #opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
-button{font:inherit;font-size:12px;padding:6px 8px;border:1px solid #c9ced8;background:#fff;border-radius:6px;cursor:pointer}
+button,select{font:inherit;font-size:12px;padding:5px 8px;border:1px solid #c9ced8;background:#fff;border-radius:6px;cursor:pointer}
 button:hover{background:#f2f4f8}
 #main{flex:1;position:relative;min-width:0}
 #c{width:100%;height:100%;display:block}
-#info{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.94);border:1px solid #e1e4ea;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6;max-width:360px}
+#info{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.95);border:1px solid #e1e4ea;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.7;max-width:380px}
 #info b{font-size:14px}
+#empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:15px;pointer-events:none}
 #hint{position:absolute;right:12px;bottom:10px;font-size:11px;color:#667085}
 #views{position:absolute;right:12px;top:12px;display:flex;gap:4px}
-@media (max-width:700px){#app{flex-direction:column}#side{width:100%;height:42%}}
+@media (max-width:700px){#app{flex-direction:column}#side{width:100%;height:45%}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head><body>
 <div id="app">
- <div id="side"><h1>FBX 3D 뷰어</h1><label id="drop"><input type="file" id="file" multiple accept=".fbx,.obj,.stl,.glb"><b>FBX 파일 올리기</b><span>클릭하거나 여기로 끌어다 놓기<br>(여러 개 가능 · FBX / OBJ / STL / GLB)</span></label><div id="list"></div>
+ <div id="side"><h1>FBX 3D 뷰어</h1>
+  <label id="drop"><input type="file" id="file" multiple accept=".fbx,.obj,.stl,.glb"><b>FBX 파일 올리기</b><span>클릭하거나 여기로 끌어다 놓기<br>(여러 개 가능 · FBX 바이너리/텍스트 · OBJ · STL · GLB)</span></label>
+  <div id="list"></div>
   <div id="opts">
    <label><input type="checkbox" id="wire"> 와이어프레임</label>
    <label><input type="checkbox" id="edges" checked> 모서리선 표시</label>
    <label><input type="checkbox" id="mono"> 단색 재질(원본 재질 무시)</label>
    <button id="all">전체 나란히 보기</button>
   </div></div>
- <div id="main"><canvas id="c"></canvas><div id="info" style="display:none"></div><div id="empty">왼쪽에서 FBX 파일을 올려주세요</div>
+ <div id="main"><canvas id="c"></canvas>
+  <div id="info" style="display:none"></div><div id="empty">왼쪽에서 FBX 파일을 올려주세요</div>
   <div id="views"><button data-v="iso">3D</button><button data-v="front">정면</button><button data-v="top">평면</button><button data-v="right">우측</button></div>
   <div id="hint">왼쪽 드래그: 회전 · 오른쪽 드래그: 이동 · 휠: 확대</div></div>
 </div>
@@ -45,75 +52,122 @@ import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {STLLoader} from 'three/addons/loaders/STLLoader.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-const DATA=[];
-const wire=document.getElementById('wire'),edges=document.getElementById('edges'),mono=document.getElementById('mono');
-const MM=304.8;
-const cv=document.getElementById('c'),info=document.getElementById('info');
+
+// 장면 단위 = m, 위쪽 = +Z
+const UNITS={mm:1,cm:10,m:1000,ft:304.8,in:25.4};
+const $=id=>document.getElementById(id);
+const cv=$('c'),info=$('info'),empty=$('empty'),list=$('list'),wire=$('wire'),edges=$('edges'),mono=$('mono');
 const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xf4f5f7);
-const cam=new THREE.PerspectiveCamera(40,1,0.01,1000);cam.up.set(0,0,1);
+const cam=new THREE.PerspectiveCamera(40,1,0.001,1000);cam.up.set(0,0,1);
 const ctl=new OrbitControls(cam,cv);ctl.enableDamping=true;
 scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f99,1.6));
 const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(5,-8,10);scene.add(dl);
 const dl2=new THREE.DirectionalLight(0xffffff,.6);dl2.position.set(-6,6,4);scene.add(dl2);
 let grid=null;const root=new THREE.Group();scene.add(root);
-const cache={};const monoMat=new THREE.MeshStandardMaterial({color:0xc8ccd4,roughness:.6,metalness:.1,side:THREE.DoubleSide});
-function b64ab(s){const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer}
-function load(i){
- if(cache[i])return cache[i];
- const d=DATA[i];let r;
- try{const o=d.obj;
-  let m=0,t=0;o.traverse(x=>{if(x.isCamera||x.isLight){x.visible=false}if(x.isMesh){m++;const g=x.geometry;t+=(g.index?g.index.count:g.attributes.position.count)/3;
-   x.userData.orig=x.material;const e=new THREE.LineSegments(new THREE.EdgesGeometry(g,25),new THREE.LineBasicMaterial({color:0x2b3240,transparent:true,opacity:.55}));e.userData.edge=1;x.add(e);}});
-  const bb=new THREE.Box3().setFromObject(o),s=bb.getSize(new THREE.Vector3());
-  r={ok:true,obj:o,meshes:m,tris:Math.round(t),size:s};
- }catch(e){r={ok:false,err:String(e.message||e)}}
- return cache[i]=r;
-}
+const monoMat=new THREE.MeshStandardMaterial({color:0xc8ccd4,roughness:.6,metalness:.1,side:THREE.DoubleSide});
+const DATA=[];let current=-1;
+
+// ---------- FBX 헤더 정보 (축/단위) ----------
+function fbxMeta(buf){
+ const u8=new Uint8Array(buf);const isBin=new TextDecoder('latin1').decode(u8.slice(0,18))==='Kaydara FBX Binary';
+ const m={binary:isBin,upAxis:null,unitScale:null,creator:false};
+ if(!isBin){const t=new TextDecoder().decode(u8);
+  const a=t.match(/"UpAxis"\s*,\s*"int"\s*,\s*"Integer"\s*,\s*"[^"]*"\s*,\s*(-?\d+)/);if(a)m.upAxis=+a[1];
+  const s=t.match(/"UnitScaleFactor"\s*,\s*"double"\s*,\s*"Number"\s*,\s*"[^"]*"\s*,\s*([-\d.eE+]+)/);if(s)m.unitScale=+s[1];
+  m.creator=/^\s*Creator\s*:/m.test(t.slice(0,5000));m.text=t;return m}
+ const dv=new DataView(buf);
+ const find=k=>{const kb=new TextEncoder().encode(k);outer:for(let i=0;i<Math.min(u8.length,400000)-kb.length;i++){for(let j=0;j<kb.length;j++)if(u8[i+j]!==kb[j])continue outer;return i+kb.length}return -1};
+ const val=k=>{let p=find(k);if(p<0)return null;for(let n=0;n<6&&p<u8.length;n++){const c=String.fromCharCode(u8[p]);p++;
+  if(c==='S'||c==='R'){p+=4+dv.getUint32(p,true)}else if(c==='I')return dv.getInt32(p,true);else if(c==='D')return dv.getFloat64(p,true);else if(c==='F')return dv.getFloat32(p,true);else return null}return null};
+ m.upAxis=val('UpAxis');m.unitScale=val('UnitScaleFactor');m.creator=find('Creator')>=0;return m}
+
+// 텍스트 FBX의 한 줄 블록 "X: .. { k: v, k2: v2 }" 를 여러 줄로 펼침 (three.js 파서 호환)
+function normalizeAsciiFBX(text){
+ const out=[];
+ const splitTop=s=>{const parts=[];let q=false,cur='';for(const ch of s){if(ch=='"')q=!q;if(ch==','&&!q){parts.push(cur);cur=''}else cur+=ch}parts.push(cur);return parts.map(p=>p.trim()).filter(Boolean)};
+ for(const line of text.split(/\r?\n/)){
+  const m=line.match(/^(\s*)([^{}"]*?(?:"[^"]*"[^{}"]*?)*)\{(.*)\}\s*$/);
+  if(m&&m[3].trim()!==''){const ind=m[1],head=m[2].trimEnd(),body=m[3].trim();
+   out.push(ind+head+(head.endsWith(':')?'  {':' {'));
+   if(/^a\s*:/.test(body))out.push(ind+'\t'+body);else for(const p of splitTop(body))out.push(ind+'\t'+p);
+   out.push(ind+'}')}
+  else if(/^\s*P\s*:/.test(line))out.push(line.replace(/,\s+(?=[-+.\d])/g,','));  // P: 값의 쉼표 뒤 공백 제거
+  else out.push(line)}
+ return out.join('\n')}
+
+// ---------- 파일 읽기 ----------
+async function parse(file){
+ const ext=file.name.split('.').pop().toLowerCase(),buf=await file.arrayBuffer();
+ if(ext==='fbx'){const meta=fbxMeta(buf);let src=buf,note=[];
+  if(!meta.binary){const fixed=normalizeAsciiFBX(meta.text);if(fixed!==meta.text)note.push('한 줄 블록 자동 보정');src=new TextEncoder().encode(fixed).buffer}
+  const obj=new FBXLoader().parse(src,'');
+  let unit='mm',why='';
+  if(meta.unitScale&&!(meta.unitScale===1&&!meta.creator)){const mmpu=meta.unitScale*10;
+   unit=Object.keys(UNITS).find(k=>Math.abs(UNITS[k]-mmpu)<1e-6*mmpu)||'mm';why=`파일 설정(UnitScaleFactor ${meta.unitScale})`;
+   if(!Object.keys(UNITS).some(k=>Math.abs(UNITS[k]-mmpu)<1e-6*mmpu)){unit='custom';UNITS.custom=mmpu}}
+  else why='파일 단위 정보 없음 → mm로 추정';
+  return {obj,up:meta.upAxis===1?'Y':'Z',unit,why,fmt:(meta.binary?'FBX 바이너리':'FBX 텍스트')+(note.length?' · '+note.join(', '):'')}}
+ if(ext==='obj')return {obj:new OBJLoader().parse(new TextDecoder().decode(buf)),up:'Y',unit:'mm',why:'OBJ → mm로 가정',fmt:'OBJ'};
+ if(ext==='stl'){const g=new STLLoader().parse(buf);return {obj:new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc8ccd4})),up:'Z',unit:'mm',why:'STL → mm로 가정',fmt:'STL'}}
+ if(ext==='glb'){const r=await new Promise((a,b)=>new GLTFLoader().parse(buf,'',a,b));return {obj:r.scene,up:'Y',unit:'m',why:'glTF 표준(m)',fmt:'GLB'}}
+ throw new Error('지원하지 않는 형식: .'+ext)}
+
+function prepare(d){
+ const o=d.obj;let m=0,t=0;
+ o.traverse(x=>{if(x.isCamera||x.isLight)x.visible=false;
+  if(x.isMesh){m++;const g=x.geometry;t+=(g.index?g.index.count:g.attributes.position.count)/3;x.userData.orig=x.material;
+   const e=new THREE.LineSegments(new THREE.EdgesGeometry(g,25),new THREE.LineBasicMaterial({color:0x2b3240,transparent:true,opacity:.55}));e.userData.edge=1;x.add(e)}});
+ d.meshes=m;d.tris=Math.round(t);
+ d.wrap=new THREE.Group();d.wrap.add(o);
+ if(d.up==='Y')o.rotation.x=Math.PI/2;   // Y-up → Z-up
+ applyUnit(d)}
+function applyUnit(d){const s=UNITS[d.unit]/1000;d.obj.scale.setScalar(s);d.obj.updateMatrixWorld(true);
+ d.size=new THREE.Box3().setFromObject(d.wrap).getSize(new THREE.Vector3())}
+const fmt=s=>[s.x,s.y,s.z].map(v=>Math.round(v*1000).toLocaleString()).join(' × ')+' mm';
+
+// ---------- 표시 ----------
 function applyOpts(){const w=wire.checked,e=edges.checked,mo=mono.checked;
  root.traverse(x=>{if(x.isMesh){x.material=mo?monoMat:x.userData.orig;(Array.isArray(x.material)?x.material:[x.material]).forEach(m=>{m.wireframe=w;m.side=THREE.DoubleSide})}if(x.userData.edge)x.visible=e})}
 function fit(view='iso'){const bb=new THREE.Box3().setFromObject(root);if(bb.isEmpty())return;
- const c=bb.getCenter(new THREE.Vector3()),r=bb.getSize(new THREE.Vector3()).length()/2;
+ const c=bb.getCenter(new THREE.Vector3()),r=Math.max(bb.getSize(new THREE.Vector3()).length()/2,1e-3);
  const dir={iso:[1,-1.3,.9],front:[0,-1,0],top:[0,-0.001,1],right:[1,0,0]}[view];
- const v=new THREE.Vector3(...dir).normalize().multiplyScalar(r/Math.sin(THREE.MathUtils.degToRad(20))*1.05);
- cam.position.copy(c).add(v);cam.near=r/100;cam.far=r*100;cam.updateProjectionMatrix();ctl.target.copy(c);ctl.update();
- if(grid)scene.remove(grid);const gs=Math.max(r*4,1);grid=new THREE.GridHelper(gs,20,0xb5bac4,0xdde0e6);grid.rotation.x=Math.PI/2;grid.position.set(c.x,c.y,bb.min.z-0.001);scene.add(grid)}
-const fmt=s=>[s.x,s.y,s.z].map(v=>Math.round(v*MM)).join(' × ')+' mm';
-function show(i){root.clear();document.querySelectorAll('.it').forEach((el,k)=>el.classList.toggle('on',k===i));
- const d=DATA[i],r=cache[i];
- if(!r.ok){info.innerHTML=`<b>${d.name}</b><br><span class="er">불러오기 실패: ${r.err}</span>`;return}
- root.add(r.obj);applyOpts();fit();
- info.innerHTML=`<b>${d.name}</b><br>FBX 외형(W×D×H): <b>${fmt(r.size)}</b><br>메쉬 ${r.meshes}개 · 삼각형 ${r.tris.toLocaleString()}개`}
-function showAll(){root.clear();document.querySelectorAll('.it').forEach(el=>el.classList.remove('on'));let x=0,ok=0;
- DATA.forEach((d,i)=>{const r=cache[i];if(!r||!r.ok)return;ok++;const g=new THREE.Group();g.add(r.obj);const bb=new THREE.Box3().setFromObject(r.obj);
-  g.position.set(x-bb.min.x,-(bb.min.y+bb.max.y)/2,-bb.min.z);x+=(bb.max.x-bb.min.x)+1.0;root.add(g)});
- applyOpts();fit();info.innerHTML=`<b>전체 ${ok}/${DATA.length}개 표시</b><br>실제 크기 비율 그대로 나란히 배치`}
-const list=document.getElementById('list'),empty=document.getElementById('empty');
-function unitScale(ext){return ext==='fbx'?1:(1/304.8)} // FBX(Revit)=ft, 그 외 mm 가정
-async function parse(file){const ext=file.name.split('.').pop().toLowerCase(),buf=await file.arrayBuffer();
- if(ext==='fbx')return new FBXLoader().parse(buf,'');
- if(ext==='obj'){const o=new OBJLoader().parse(new TextDecoder().decode(buf));o.scale.setScalar(unitScale(ext));return o}
- if(ext==='stl'){const g=new STLLoader().parse(buf);const o=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc8ccd4}));o.scale.setScalar(unitScale(ext));return o}
- if(ext==='glb'){const r=await new Promise((a,b)=>new GLTFLoader().parse(buf,'',a,b));const o=r.scene;o.rotation.x=Math.PI/2;o.scale.setScalar(1/0.3048);return o}
- throw new Error('지원하지 않는 형식: .'+ext)}
-function renderList(){list.innerHTML='';DATA.forEach((d,i)=>{const el=document.createElement('div');el.className='it';
- const r=d.res;el.innerHTML=`<span class="x" title="목록에서 빼기">✕</span><b>${i+1}. ${d.name}</b><small>${(d.size/1024).toFixed(0)} KB</small><div class="st ${r.ok?'ok':'er'}">${r.ok?`✔ 정상 · ${fmt(r.size)}`:`✖ 실패: ${r.err}`}</div>`;
- el.onclick=()=>show(i);el.querySelector('.x').onclick=e=>{e.stopPropagation();DATA.splice(i,1);Object.keys(cache).forEach(k=>delete cache[k]);DATA.forEach((d,k)=>cache[k]=d.res);renderList();DATA.length?show(0):(root.clear(),info.style.display='none',empty.style.display='flex')};list.appendChild(el)});
- if(DATA.length>1&&!document.getElementById('all').dataset.on){}}
+ cam.position.copy(c).add(new THREE.Vector3(...dir).normalize().multiplyScalar(r/Math.sin(THREE.MathUtils.degToRad(20))*1.05));
+ cam.near=r/200;cam.far=r*200;cam.updateProjectionMatrix();ctl.target.copy(c);ctl.update();
+ if(grid)scene.remove(grid);grid=new THREE.GridHelper(Math.max(r*4,0.5),20,0xb5bac4,0xdde0e6);grid.rotation.x=Math.PI/2;grid.position.set(c.x,c.y,bb.min.z-r*0.001);scene.add(grid)}
+function unitSelect(d){const opts=['mm','cm','m','ft','in'].concat(d.unit==='custom'?['custom']:[]);
+ return `<select id="unitSel">${opts.map(u=>`<option ${u===d.unit?'selected':''}>${u}</option>`).join('')}</select>`}
+function show(i){current=i;root.clear();renderSel();
+ const d=DATA[i];empty.style.display='none';info.style.display='block';
+ if(!d.ok){info.innerHTML=`<b>${d.name}</b><br><span class="er">불러오기 실패: ${d.err}</span>`;return}
+ d.wrap.position.set(0,0,0);root.add(d.wrap);applyOpts();fit();
+ info.innerHTML=`<b>${d.name}</b><br>외형(W×D×H): <b>${fmt(d.size)}</b><br>${d.fmt} · 위쪽 축 ${d.up}<br>단위 ${unitSelect(d)} <small style="color:#667085">${d.why}</small><br>메쉬 ${d.meshes}개 · 삼각형 ${d.tris.toLocaleString()}개`;
+ $('unitSel').onchange=e=>{d.unit=e.target.value;d.why='직접 지정';applyUnit(d);renderList();show(i)}}
+function showAll(){current=-1;root.clear();renderSel();let x=0,ok=0;const gap=0.3;
+ DATA.forEach(d=>{if(!d.ok)return;ok++;d.wrap.position.set(0,0,0);d.wrap.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(d.wrap);
+  d.wrap.position.set(x-bb.min.x,-(bb.min.y+bb.max.y)/2,-bb.min.z);x+=(bb.max.x-bb.min.x)+gap;root.add(d.wrap)});
+ applyOpts();fit();empty.style.display='none';info.style.display='block';info.innerHTML=`<b>전체 ${ok}/${DATA.length}개 표시</b><br>실제 크기 비율 그대로 나란히 배치`}
+function renderSel(){[...list.children].forEach((el,k)=>el.classList.toggle('on',k===current))}
+function renderList(){list.innerHTML='';
+ DATA.forEach((d,i)=>{const el=document.createElement('div');el.className='it';
+  el.innerHTML=`<span class="x" title="목록에서 빼기">✕</span><b>${i+1}. ${d.name}</b><small>${(d.bytes/1024).toFixed(0)} KB${d.ok?' · '+d.fmt:''}</small><div class="st ${d.ok?'ok':'er'}">${d.ok?'✔ 정상 · '+fmt(d.size):'✖ 실패: '+d.err}</div>`;
+  el.onclick=()=>show(i);
+  el.querySelector('.x').onclick=e=>{e.stopPropagation();DATA.splice(i,1);renderList();
+   if(DATA.length)show(Math.min(i,DATA.length-1));else{root.clear();info.style.display='none';empty.style.display='flex'}};
+  list.appendChild(el)});renderSel()}
 async function addFiles(files){const start=DATA.length;
- for(const f of files){const d={name:f.name,size:f.size};
-  try{d.obj=await parse(f)}catch(e){d.err=String(e.message||e)}
-  DATA.push(d);const i=DATA.length-1;
-  if(d.obj){delete cache[i];d.res=load(i)}else d.res=cache[i]={ok:false,err:d.err}}
- renderList();empty.style.display='none';info.style.display='block';
- if(DATA.length>start)show(start)}
-const fileIn=document.getElementById('file'),drop=document.getElementById('drop');
-fileIn.onchange=()=>{addFiles([...fileIn.files]);fileIn.value=''};
+ for(const f of files){const d={name:f.name,bytes:f.size};
+  try{Object.assign(d,await parse(f));prepare(d);d.ok=true}catch(e){d.ok=false;d.err=String(e.message||e)}
+  DATA.push(d)}
+ renderList();if(DATA.length>start)show(start)}
+
+$('file').onchange=e=>{addFiles([...e.target.files]);e.target.value=''};
+const drop=$('drop');
 ['dragover','dragenter'].forEach(ev=>addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
 ['dragleave','drop'].forEach(ev=>addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
 addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)addFiles([...e.dataTransfer.files])});
 [wire,edges,mono].forEach(e=>e.onchange=applyOpts);
-document.getElementById('all').onclick=()=>{if(DATA.length)showAll()};
+$('all').onclick=()=>{if(DATA.length)showAll()};
 document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>fit(b.dataset.v));
 function resize(){const p=cv.parentElement;R.setSize(p.clientWidth,p.clientHeight,false);cam.aspect=p.clientWidth/p.clientHeight;cam.updateProjectionMatrix()}
 addEventListener('resize',resize);resize();
