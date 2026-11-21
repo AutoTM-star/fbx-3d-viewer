@@ -13,6 +13,8 @@ Revit에서 내보낸 FBX 파일을 브라우저에서 바로 3D로 확인하는
 - 지원 형식: FBX 바이너리·텍스트(ASCII), OBJ·STL(mm 가정), GLB
 - FBX의 위쪽 축(Y/Z)과 단위(UnitScaleFactor)를 읽어 자동 보정, 단위는 화면에서 직접 변경 가능
 - 비표준 텍스트 FBX(한 줄 블록, 쉼표 뒤 공백) 자동 보정
+- Revit FBX 재질 색 표시: Revit은 재질을 표준 Material이 아닌 Autodesk 자산(ADSKAssetReferences)으로 저장 → 뷰어가 직접 읽어 색 적용
+- 프로젝트에서 내보낸 FBX의 레벨 표식 자동 숨김
 
 파일은 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.
 
