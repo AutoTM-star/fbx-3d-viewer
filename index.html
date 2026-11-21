@@ -176,8 +176,9 @@ function readRevitMaterials(buf, unzipSync) {
 // Revit 재질 색을 메쉬에 적용
 function applyRevitColors(obj,rm){
  let n=0,gray=0;const cache=new Map();
- const mk=m=>{const k=m.name;if(cache.has(k))return cache.get(k);const c=new THREE.Color();if(m.color)c.setRGB(m.color[0],m.color[1],m.color[2],THREE.SRGBColorSpace);else c.set(0xcccccc);
-  if(m.color&&m.color.every(v=>Math.abs(v-0.315)<0.002))gray++;const mat=new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:.05,name:m.name});cache.set(k,mat);return mat};
+ const mk=m=>{const k=m.name;if(cache.has(k))return cache.get(k);const c=new THREE.Color();const isGray=m.color&&m.color.every(v=>Math.abs(v-0.315)<0.002);
+  if(m.color&&!isGray)c.setRGB(m.color[0],m.color[1],m.color[2],THREE.SRGBColorSpace);else c.set(0xc8ccd4);  // Revit 기본 회색(0.315)은 밝은 회색으로
+  if(isGray)gray++;const mat=new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:.05,name:m.name});cache.set(k,mat);return mat};
  obj.traverse(x=>{if(!x.isMesh)return;const list=rm.byModel.get(x.ID);if(!list||!list.length)return;
   const mats=list.map(mk);x.material=x.geometry.groups.length?mats:mats[0];n++});
  return {meshes:n,materials:cache.size,allGray:cache.size>0&&gray===cache.size}}
